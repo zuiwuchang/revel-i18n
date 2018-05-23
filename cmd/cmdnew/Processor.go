@@ -41,9 +41,9 @@ func NewProcessor(context *Context) (processor *Processor, e error) {
 
 	// 合併 檔案
 	if p.region == "" {
-		p.file = context.GetDist() + "locale." + p.locale
+		p.file = context.GetDist() + "/locale." + p.locale
 	} else {
-		p.file = context.GetDist() + "locale_" + p.region + "." + p.locale
+		p.file = context.GetDist() + "/locale_" + p.region + "." + p.locale
 	}
 	if !context.Touch {
 		if e = p.initMerge(); e != nil {
@@ -167,6 +167,7 @@ func (p *Processor) writeFile(keys map[string]*Item) (e error) {
 
 	f.Close()
 
+	fmt.Println("dist", p.file)
 	fmt.Printf("%v items %v merge %v need translation\n", len(keys), merge, len(keys)-merge)
 	return
 }
