@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -89,6 +90,7 @@ func (p *Processor) writeFile(keys map[string]*Item) (e error) {
 	if e != nil {
 		return
 	}
+	defer f.Close()
 
 	// session
 	var n int
@@ -104,23 +106,34 @@ func (p *Processor) writeFile(keys map[string]*Item) (e error) {
 		}
 	}
 	// key
-	merge := 0
+	okItems, noItems := p.getSortItems(keys)
+	e = p.writeItems(f, okItems)
+	if e != nil {
+		return
+	}
+	e = p.writeItems(f, noItems)
+	if e != nil {
+		return
+	}
 
-	for _, item := range keys {
-		if item.Value == "" { // 先寫入 已經 完成 的翻譯
-			continue
-		}
-		merge++
+	fmt.Println("dist", p.file)
+	fmt.Printf("%v items %v merge %v need translation\n", len(keys), len(okItems), len(noItems))
+	return
+}
+func (p *Processor) writeItems(f *os.File, items Items) (e error) {
+	var str string
+	var n int
+	for _, item := range items {
 		// description
 		if p.description && len(item.Description) != 0 {
 			for description := range item.Description {
 				str = "#" + description + "\n"
 				n, e = f.WriteString(str)
 				if e != nil {
-					return
+					break
 				} else if n != len(str) {
 					e = errShortWrite
-					return
+					break
 				}
 			}
 		}
@@ -129,46 +142,32 @@ func (p *Processor) writeFile(keys map[string]*Item) (e error) {
 
 		n, e = f.WriteString(str)
 		if e != nil {
-			return
+			break
 		} else if n != len(str) {
 			e = errShortWrite
-			return
+			break
 		}
 	}
+	return
+}
 
+// 排序 項目
+func (p *Processor) getSortItems(keys map[string]*Item) (okItems, noItems Items) {
+	okItems = make(Items, 0, len(keys))
+	noItems = make(Items, 0, len(keys))
 	for _, item := range keys {
-		if item.Value != "" { //寫入 未翻譯 項
-			continue
-		}
-		// description
-		if p.description && len(item.Description) != 0 {
-			for description := range item.Description {
-				str = "#" + description + "\n"
-				n, e = f.WriteString(str)
-				if e != nil {
-					return
-				} else if n != len(str) {
-					e = errShortWrite
-					return
-				}
-			}
-		}
-		// key
-		str = item.Key + "=\n"
-
-		n, e = f.WriteString(str)
-		if e != nil {
-			return
-		} else if n != len(str) {
-			e = errShortWrite
-			return
+		if item.Value == "" {
+			noItems = append(noItems, item)
+		} else {
+			okItems = append(okItems, item)
 		}
 	}
-
-	f.Close()
-
-	fmt.Println("dist", p.file)
-	fmt.Printf("%v items %v merge %v need translation\n", len(keys), merge, len(keys)-merge)
+	if (len(okItems)) > 0 {
+		sort.Sort(okItems)
+	}
+	if (len(noItems)) > 0 {
+		sort.Sort(noItems)
+	}
 	return
 }
 func (p *Processor) readFile(keys map[string]*Item, path, name string) (e error) {
