@@ -39,8 +39,8 @@ func TestMatch(t *testing.T) {
 	}
 
 	e = _tTestMatch(t, r,
-		`{{set . "title" (msg $ctx "User.ViewMenu ? * / + - !@#$%^&()" )}}{{msg . "ok"}} {{yes}}`,
-		"User.ViewMenu ? * / + - !@#$%^&()",
+		`{{set . "title" (msg $ctx "User.ViewMenu ? * / + - !@#$%^&();:',." )}}{{msg . "ok"}} {{yes}}`,
+		"User.ViewMenu ? * / + - !@#$%^&();:',.",
 		"ok",
 	)
 	if e != nil {

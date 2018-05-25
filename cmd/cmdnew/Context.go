@@ -10,7 +10,7 @@ import (
 
 const (
 	// MatchKey .
-	MatchKey = `[+-\?\*\/\w\s\.!@#\$%\^&\(\)]+`
+	MatchKey = `[+-\?\*\/\w\s\.!@#\$%\^&\(\);:',]+`
 	// MatchString .
 	MatchString = `.*?[\s\(]?msg\s+?[\.\$\w]+?\s+?"(` + MatchKey + `)".*?`
 )
