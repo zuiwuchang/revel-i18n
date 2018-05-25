@@ -9,8 +9,10 @@ import (
 )
 
 const (
+	// MatchKey .
+	MatchKey = `[+-\?\*\/\w\s\.!@#\$%\^&\(\)]+`
 	// MatchString .
-	MatchString = `.*?[\s\(]?msg\s+?[\.\$\w]+?\s+?"([\w\s\.-]+)".*?`
+	MatchString = `.*?[\s\(]?msg\s+?[\.\$\w]+?\s+?"(` + MatchKey + `)".*?`
 )
 
 // Context .

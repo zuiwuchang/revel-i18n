@@ -38,6 +38,14 @@ func TestMatch(t *testing.T) {
 		t.Fatal(e)
 	}
 
+	e = _tTestMatch(t, r,
+		`{{set . "title" (msg $ctx "User.ViewMenu ? * / + - !@#$%^&()" )}}{{msg . "ok"}} {{yes}}`,
+		"User.ViewMenu ? * / + - !@#$%^&()",
+		"ok",
+	)
+	if e != nil {
+		t.Fatal(e)
+	}
 }
 func _tTestMatch(t *testing.T, r *regexp.Regexp, str string, val ...string) (e error) {
 	strs := r.FindAllString(str, -1)
@@ -48,7 +56,7 @@ func _tTestMatch(t *testing.T, r *regexp.Regexp, str string, val ...string) (e e
 	for i, str := range strs {
 		str = r.ReplaceAllString(str, "$1")
 		if str != val[i] {
-			e = fmt.Errorf("val[%v] not match %s != %s", i, str, val)
+			e = fmt.Errorf("val[%v] not match %s != %s", i, str, val[i])
 			return
 		}
 	}
