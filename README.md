@@ -1,3 +1,8 @@
+# Discard
+因為 microsoft的原因 此項目 已經被轉移到 [gitlab.com/king011/revel-i18n](https://gitlab.com/king011/revel-i18n)
+
+github上的 版本將不在進行 任何維護
+
 # revel-i18n
 revel i18n tools
 
